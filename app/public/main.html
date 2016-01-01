@@ -1,0 +1,12 @@
+<form action="" method="POST" role="form" ng-submit="post()">
+	<legend>Find Damage</legend>
+
+	<div class="form-group">
+	<input type="url" ng-model="prediction.url" id="input" class="form-control" required="required" placeholder = "Url to process">
+	</div>
+	<textarea ng-bind="url2" id="tarea" class="form-control" rows="3"></textarea>
+	<button type="submit" class="btn btn-success">{{url2}}</button>
+	<span ng-bind="url2"></span>
+</form>
+
+<img ng-src ="{{image}}">
