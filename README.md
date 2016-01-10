@@ -10,4 +10,5 @@ Please note that this project uses [Clarifai's custom training API](https://gith
 
 
 :octocat: [Desktop Repo](https://github.com/mhijazi1/Karma-hackathon)
+
 :octocat: [Clarifai custom training API](https://github.com/Clarifai/hackathon.git)
