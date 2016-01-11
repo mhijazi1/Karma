@@ -1,8 +1,15 @@
 <form action="" method="POST" role="form" ng-submit="post()">
 	<legend>Find Damage</legend>
-	<div class="alert alert-danger" ng-show = "imageVis">
+	<div class="alert alert-danger" ng-show = "imageVis && !damaged && !undamaged">
 		<strong>Woops!</strong> Sorry this doesn't do anything yet but check back soon I'll be sure to make it do something. In the mean time here's your picture!
 	</div>
+	<div class="alert alert-success" ng-show = "imageVis && !damaged && undamaged">
+		<strong>All good!</strong> The car is undamaged!
+	</div>
+	<div class="alert alert-warning" ng-show = "imageVis && damaged && !undamaged">
+		<strong>Uh Oh!</strong> The car appears to be dented...
+	</div>
+
 	<div class="form-group">
 	<input type="url" ng-model="prediction.url" id="input" class="form-control" required="required" placeholder = "Url to process">
 	</div>
