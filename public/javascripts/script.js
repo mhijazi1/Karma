@@ -27,6 +27,11 @@ app.controller('mainController', function($scope) {
 	};
 
 	$scope.post = function() {
+		$scope.imageVis = false;
+		$scope.damaged = false;
+		$scope.undamaged = false;
+		$scope.image = "";
+
 		//get url
 		$scope.image = $scope.prediction.url;
 		//run prediction for perfect
