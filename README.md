@@ -8,7 +8,9 @@ The desktop version was part of the [UGAHacks](http://ugahacks.devpost.com/) hac
 
 Please note that this project uses [Clarifai's custom training API](https://github.com/Clarifai/hackathon.git) which is still in alpha. 
 
+:earth_americas: [Live Demo](http://karmadev.herokuapp.com)
 
 :octocat: [Desktop Repo](https://github.com/mhijazi1/Karma-hackathon)
 
 :octocat: [Clarifai custom training API](https://github.com/Clarifai/hackathon.git)
+
