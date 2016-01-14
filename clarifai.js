@@ -20,7 +20,7 @@ Clarifai.init = function(options) {
         }
         this.collectionId = options.collectionId || 'default';
         this.nameSpace = options.nameSpace || 'default';
-        getAccessToken(options);
+        getAccessToken(options, listCollections(function(){}));
         //          .then(
         //               this.createCollection.bind(this),
         //              this.onError.bind(this)
@@ -54,12 +54,13 @@ getAccessToken = function(options, callback) {
     if (options.clientId && options.clientSecret) {
         fetchAccessToken(options.clientId, options.clientSecret, function(err, response, json) {
             if (err) {
-                console.error(err[0]);
+                console.error("ERROR: "+err.syscall +" - "+ err.code);
                 return;
             }
             var now = new Date().getTime();
             json.expireTime = now + json.expires_in;
             this.accessToken = json.access_token;
+            callback;
         });
     } else {
         console.error("need a clientId and clientSecret");
@@ -81,4 +82,128 @@ fetchAccessToken = function(clientId, clientSecret, returnAccessToken) {
         url: tokenUrl,
         form: data
     }, returnAccessToken);
+}
+
+/*createCollection = function(){
+    var deferred = $.Deferred();
+    this.listCollections().then(
+        function(collectionCreated){
+            if(collectionCreated === true){
+                var result = {
+                    'success': true
+                }
+                deferred.resolve(result);   
+            }
+            else{
+                var data = {
+                    'collection': {
+                        'id': this.collectionId,
+                        'settings': {
+                            'max_num_docs': 100000
+                        }
+                    }
+                }
+                $.ajax(
+                    {
+                        'type': 'POST',
+                        'url': this.baseUrl + 'curator/collections',
+                        'data': JSON.stringify(data),
+                        'processData': false,
+                        'contentType': 'application/json; charset=utf-8',
+                        'headers': {
+                            'Authorization': 'Bearer ' + this.accessToken
+                        }
+                    }  
+                ).then(
+                    function(json){
+                        if(json.status.status === "OK"){
+                            this.log("Clarifai: Collection: '" + this.collectionId + "' created");
+                            this.collectionCreated = true;
+                            var result = {
+                                'success': true
+                            }
+                            deferred.resolve(result);
+                        }
+                        if(json.status.status === 'ERROR'){
+                            if(json.status.message.indexOf('Bad request: Collection "' + this.collectionId + '" already exists for user') !== -1){
+                                this.collectionCreated = true;
+                                var result = {
+                                    'success': true
+                                }
+                                deferred.resolve(result);
+                            }
+                            else{
+                                console.error("Clarifai: Error instantiating Clarifai object", json);
+                                var result = {
+                                    'success': false
+                                }
+                                deferred.resolve(result);
+                            }
+                        }
+                    }.bind(this),
+                    function(e){
+                        if(e.status === 409){
+                            var result = {
+                                'success': true
+                            }
+                            deferred.resolve(result);
+                        }
+                        else{
+                            console.error("Clarifai: Error instantiating Clarifai object", e);
+                            console.error(e.responseJSON.status_msg);
+                            if(e.responseJSON.status_msg === 'Token is not valid. Please use valid tokens for a application in your account.'){
+                                console.info("Please make sure you are using a valid accessToken https://developer-alpha.clarifai.com/docs/auth");
+                            }
+                            var result = {
+                                'success': false
+                            }
+                            deferred.resolve(result);
+                        }
+                    }.bind(this)
+                );
+            }
+        }.bind(this),
+        function(e){
+            deferred.reject(e);        
+        }.bind(this)
+    );
+    return deferred;
+}*/
+
+listCollections = function(callback){
+    var collectionCreated = false;
+    util.log("List Collections")
+    request.get(
+        {
+            'url': this.baseUrl + 'curator/collections',
+            'contentType': 'application/json; charset=utf-8',
+            'headers': {
+                'Authorization': 'Bearer ' + this.accessToken
+            }
+        }, function(err, response, body){
+            if(err){
+                return;
+            }
+            util.log("Body: " + body);
+        }  
+    )
+    /*.then(
+        function(json){
+            if(json.status.status === 'OK'){
+                for(var i = 0; i < json.collections.length; i++){
+                    var collectionId = json.collections[i].id;
+                    if(collectionId === this.collectionId){
+                        collectionCreated = true;
+                        break;
+                    }
+                }
+            }
+            deferred.resolve(collectionCreated);
+        }.bind(this),
+        function(e){
+            console.error(e);
+            deferred.reject();
+        }.bind(this)
+    );
+    return deferred;*/
 }
