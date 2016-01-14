@@ -5,48 +5,49 @@ var Clarifai = function() {};
 module.exports = Clarifai;
 
 Clarifai.init = function(options) {
-    validateConstructor(options, function(validate){
-        util.log(validate);
-        if (validate === false) {
+    validateConstructor(options, function(valid) {
+        util.log(valid);
+        if (valid === false) {
             return false;
-        }   
-    });
-    this.collectionCreated = false;
-    this.addDocumentQueue = [];
-    this.baseUrl = options.baseUrl || 'https://api-alpha.clarifai.com/v1/';
-    this.debug = true;
-    if (options.debug === false) {
-        this.debug = false;
-    }
-    this.collectionId = options.collectionId || 'default';
-    this.nameSpace = options.nameSpace || 'default';
- /*   getAccessToken(options).then(
-        this.createCollection.bind(this),
-        this.onError.bind(this)
-    );*/
+        }
 
+        this.collectionCreated = false;
+        this.addDocumentQueue = [];
+        this.baseUrl = options.baseUrl || 'https://api-alpha.clarifai.com/v1/';
+        this.debug = true;
+        if (options.debug === false) {
+            this.debug = false;
+        }
+        this.collectionId = options.collectionId || 'default';
+        this.nameSpace = options.nameSpace || 'default';
+        /*   getAccessToken(options).then(
+               this.createCollection.bind(this),
+               this.onError.bind(this)
+           );*/
+
+    });
 };
 
 
 // make sure we got what we need in constructor
-validateConstructor = function(options, callback) {
+validateConstructor = function(options, isValid) {
     if (!options.clientSecret && !options.clientId) {
         console.error("Please provide a clientId and clientSecret https://developer-alpha.clarifai.com/docs/auth");
-        callback(false);
+        isValid(false);
     }
     if (options.clientId && !options.clientSecret) {
         console.error("Please provide a clientSecret https://developer-alpha.clarifai.com/docs/auth");
-        callback(false);
+        isValid(false);
     }
     if (options.clientSecret && !options.clientId) {
         console.error("Please provide a clientId https://developer-alpha.clarifai.com/docs/auth");
-        callback(false);
+        isValid(false);
     }
     util.log("Done!");
-    callback(true);
+    isValid(true);
 };
 
-
+/*
 // get an accessToken from localStorage or API
 getAccessToken = function(options, callback) {
     var accessTokenString = localStorage.getItem('clarifai-accessToken');
@@ -76,4 +77,5 @@ getAccessToken = function(options, callback) {
         deferred.reject('need a clientId and clientSecret');
     }
     return deferred;
-}
+
+}*/
