@@ -20,10 +20,11 @@ Clarifai.init = function(options) {
         }
         this.collectionId = options.collectionId || 'default';
         this.nameSpace = options.nameSpace || 'default';
-        /*   getAccessToken(options).then(
-               this.createCollection.bind(this),
-               this.onError.bind(this)
-           );*/
+        getAccessToken(options);
+        //          .then(
+        //               this.createCollection.bind(this),
+        //              this.onError.bind(this)
+        //           );
 
     });
 };
@@ -51,26 +52,22 @@ validateConstructor = function(options, isValid) {
 // get an accessToken from localStorage or API
 getAccessToken = function(options, callback) {
     if (options.clientId && options.clientSecret) {
-        this.fetchAccessToken(options.clientId, options.clientSecret).then(
-            function(json) {
-                var now = new Date().getTime();
-                json.expireTime = now + json.expires_in;
-                localStorage.setItem('clarifai-accessToken', JSON.stringify(json));
-                this.accessToken = json.access_token;
-                deferred.resolve(this.accessToken);
-            }.bind(this),
-            function(e) {
-                deferred.reject(e);
+        fetchAccessToken(options.clientId, options.clientSecret, function(err, response, json) {
+            if (err) {
+                console.error(err[0]);
+                return;
             }
-        );
+            var now = new Date().getTime();
+            json.expireTime = now + json.expires_in;
+            this.accessToken = json.access_token;
+        });
     } else {
-        deferred.reject('need a clientId and clientSecret');
-    }
-    return deferred;
+        console.error("need a clientId and clientSecret");
 
+    }
 }
 
-fetchAccessToken = function(clientId, clientSecret) {
+fetchAccessToken = function(clientId, clientSecret, returnAccessToken) {
     var tokenUrl = this.baseUrl + 'token';
 
     var data = {
@@ -80,10 +77,8 @@ fetchAccessToken = function(clientId, clientSecret) {
     }
     util.log(tokenUrl);
     util.log(data);
-    return request.post({
+    request.post({
         url: tokenUrl,
         form: data
-    }, function(err, response, body) {
-        util.log(body);
-    });
+    }, returnAccessToken);
 }
