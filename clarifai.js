@@ -1,4 +1,5 @@
 var util = require('util');
+var request = require('request');
 //Singleton Clarifai Connection. 
 var Clarifai = function() {};
 
@@ -10,7 +11,6 @@ Clarifai.init = function(options) {
         if (valid === false) {
             return false;
         }
-
         this.collectionCreated = false;
         this.addDocumentQueue = [];
         this.baseUrl = options.baseUrl || 'https://api-alpha.clarifai.com/v1/';
@@ -47,19 +47,9 @@ validateConstructor = function(options, isValid) {
     isValid(true);
 };
 
-/*
+
 // get an accessToken from localStorage or API
 getAccessToken = function(options, callback) {
-    var accessTokenString = localStorage.getItem('clarifai-accessToken');
-    if (accessTokenString) {
-        var now = new Date().getTime();
-        var accessToken = JSON.parse(accessTokenString);
-        if (now < accessToken.expireTime) {
-            this.accessToken = accessToken.access_token;
-            deferred.resolve(this.accessToken);
-            callback();
-        }
-    }
     if (options.clientId && options.clientSecret) {
         this.fetchAccessToken(options.clientId, options.clientSecret).then(
             function(json) {
@@ -78,4 +68,22 @@ getAccessToken = function(options, callback) {
     }
     return deferred;
 
-}*/
+}
+
+fetchAccessToken = function(clientId, clientSecret) {
+    var tokenUrl = this.baseUrl + 'token';
+
+    var data = {
+        grant_type: "client_credentials",
+        client_id: clientId,
+        client_secret: clientSecret
+    }
+    util.log(tokenUrl);
+    util.log(data);
+    return request.post({
+        url: tokenUrl,
+        form: data
+    }, function(err, response, body) {
+        util.log(body);
+    });
+}
