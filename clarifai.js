@@ -11,6 +11,7 @@ Clarifai.init = function(options) {
         if (valid === false) {
             return false;
         }
+        util.log("validated");
         this.collectionCreated = false;
         this.addDocumentQueue = [];
         this.baseUrl = options.baseUrl || 'https://api-alpha.clarifai.com/v1/';
@@ -52,20 +53,22 @@ validateConstructor = function(options, isValid) {
 // get an accessToken from localStorage or API
 getAccessToken = function(options, callback) {
     if (options.clientId && options.clientSecret) {
-        fetchAccessToken(options.clientId, options.clientSecret, function(err, response, json) {
+        fetchAccessToken(options.clientId, options.clientSecret, function(err, response, body) {
             if (err) {
                 console.error("ERROR: "+err.syscall +" - "+ err.code);
                 return;
             }
+            var json = JSON.parse(body);
             var now = new Date().getTime();
             json.expireTime = now + json.expires_in;
             this.accessToken = json.access_token;
-            callback;
+            util.log("AToken Reg: " +json.access_token);
         });
     } else {
         console.error("need a clientId and clientSecret");
-
+        return;
     }
+    //callback;
 }
 
 fetchAccessToken = function(clientId, clientSecret, returnAccessToken) {
@@ -173,6 +176,7 @@ fetchAccessToken = function(clientId, clientSecret, returnAccessToken) {
 listCollections = function(callback){
     var collectionCreated = false;
     util.log("List Collections")
+    util.log("Access Token: " + this.accessToken);
     request.get(
         {
             'url': this.baseUrl + 'curator/collections',
@@ -184,7 +188,9 @@ listCollections = function(callback){
             if(err){
                 return;
             }
+            //if(response.status.status ==='OK')
             util.log("Body: " + body);
+                return;
         }  
     )
     /*.then(
