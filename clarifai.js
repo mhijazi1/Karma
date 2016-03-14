@@ -3,7 +3,16 @@
 var util = require('util');
 var request = require('request');
 //Singleton Clarifai Connection.
-var Clarifai = function() {};
+var x = 0;
+var that = null;
+var Clarifai = function() {
+    if(x === 0){
+        console.log("Initialzing Clarifai");
+    }
+    x++;
+    console.log("Initialized " + x +" times");
+    return Clarifai
+};
 
 module.exports = Clarifai;
 
@@ -24,30 +33,35 @@ Clarifai.init = function(options) {
         this.collectionId = options.collectionId || 'default';
         this.nameSpace = options.nameSpace || 'default';
         getAccessToken(options, createCollection.bind(this));
+        that= this;
         //          .then(
         //               this.createCollection.bind(this),
         //              this.onError.bind(this)
         //           );
 
     });
-};
+}.bind(this);
 
 Clarifai.predict = function(url, concept, callback) {
     var data = {
-        urls: [url]
+        urls:[url]
     };
 
+    console.log("Predict URL: " + that.baseUrl + 'curator/concepts/' + that.nameSpace + '/' + concept + '/predict');
+    console.log("Predict Data: " + JSON.stringify(data));
     request.post({
-        url: this.baseUrl + 'curator/concepts/' + this.nameSpace + '/' + concept + '/predict',
-        contentType: 'application/json; charset=utf-8',
+        url: that.baseUrl + 'curator/concepts/' + that.nameSpace + '/' + concept + '/predict',
+        json: true,
+        contentType: 'application/json;',
         processData: false,
-        data: JSON.stringify(data),
+        body: data,
         headers: {
-            Authorization: 'Bearer ' + this.accessToken
+            Authorization: 'Bearer ' + that.accessToken
         }
     }, function(err, response, body) {
-        if (err) {
-            log("Clarifai: Predict on " + concept + " failed", e);
+
+        if (err || typeof(body.status) == undefined) {
+            log("Clarifai: Predict on " + concept + " failed", err);
             var result = {
                 'success': false
             }
@@ -55,15 +69,17 @@ Clarifai.predict = function(url, concept, callback) {
                 callback.call(this, result);
             }
         }
+        console.log("Json: ");
+        console.log(body);
 
-        if (json.status.status === "OK") {
+        if (body.status.status === "OK") {
             log("Clarifai: Predict on " + concept + " success");
-            var result = json.urls[0];
+            var result = body.urls[0];
             result.success = true;
             if (callback) {
                 callback.call(this, result);
             }
-        } else if (json.status.status === 'ERROR') {
+        } else if (body.status.status === 'ERROR') {
             log("Clarifai: Predict on " + concept + " failed", json);
             var result = {
                 'success': false

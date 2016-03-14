@@ -8,13 +8,13 @@ app.config(function($routeProvider) {
 		});
 });
 
-app.controller('mainController', function($scope) {
+app.controller('mainController', function($scope, $http) {
 	//authenticate with clarifai application
-	clarifai = new Clarifai({
+/*	clarifai = new Clarifai({
 		'clientId': 'Qu6z2uKlfDgqa7Atn1HlOBa3pakRBQHflQicLNr_',
 		'clientSecret': '8WgQ8D4Dp9IW1JilxEfjXjgg1geq1zpaeT3P7Rk3'
 	});
-
+*/
 
 	//make image invisible
 	$scope.imageVis = false;
@@ -34,8 +34,12 @@ app.controller('mainController', function($scope) {
 
 		//get url
 		$scope.image = $scope.prediction.url;
+
+		$http.post('/api/predict', {url: $scope.prediction.url});
+
 		//run prediction for perfect
-		clarifai.predict($scope.image, 'perfect', function(obj) {
+
+/*		clarifai.predict($scope.image, 'perfect', function(obj) {
 			//get score
 			$scope.perfect = obj.score * 100;
 
@@ -53,7 +57,7 @@ app.controller('mainController', function($scope) {
 				$scope.$apply();
 
 			});
-		});
+		});*/
 	}
 });
 

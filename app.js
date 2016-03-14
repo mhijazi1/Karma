@@ -4,11 +4,20 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var clarifai = require('./clarifai.js');
+var clar =  clarifai();
+
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var api = require('./routes/api');
 
 var app = express();
+
+clar.init({
+    'clientId': 'Qu6z2uKlfDgqa7Atn1HlOBa3pakRBQHflQicLNr_',
+    'clientSecret': '8WgQ8D4Dp9IW1JilxEfjXjgg1geq1zpaeT3P7Rk3'
+  });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +32,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
+app.use('/api', api);
+app.use('/users', routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -38,6 +48,8 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
+    console.log(err);
+    console.log(err.stack);
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
